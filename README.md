@@ -1,22 +1,39 @@
-# Context Lens 0.1
+# Context Lens v0.2
 
-Local macOS reading assistant using Ollama + Qwen3.
+A macOS Quick Action that explains a selected word using nearby text from the PDF in Preview and a local Ollama model.
 
-## 0.1 changes
-- Disables Qwen3 thinking for fast contextual lookups.
-- Starts the Ollama macOS app automatically when needed.
-- Keeps the Ollama service available for subsequent lookups.
-- Ensures qwen3:4b is installed during setup.
+## Current flow
+
+Select one word in Preview -> Services -> Context Lens Test -> local Qwen -> compact explanation.
+
+## Requirements
+
+- macOS
+- Preview with a text-selectable PDF
+- Ollama for Mac
+- `qwen3:4b` installed in Ollama
+- A working Automator Quick Action named `Context Lens Test` that receives `text` and passes input to stdin
 
 ## Install
-1. Unzip.
-2. In Terminal, `cd` into the ContextLens-v0.2 folder.
-3. Run `./install.sh`.
-4. Go to System Settings -> Keyboard -> Keyboard Shortcuts -> Services.
-5. Find Context Lens and assign a shortcut such as Control-Option-Command-M.
-6. In Preview, select text and use the shortcut.
 
-You do not need to run `ollama run qwen3:4b` manually.
+From this folder:
 
-## Current limitation
-The basic macOS Service receives selected text but not reliably the surrounding PDF sentences. For now, select the target word plus its sentence or a short passage. The next version should use a native helper/accessibility layer to extract 1-2 surrounding sentences automatically.
+```bash
+./install.sh
+```
+
+The installer copies the updated helper files into the existing Quick Action. It does not re-download Qwen on each run.
+
+## What changed in v0.2
+
+- Fixes the `undefined` model-name bug by using `qwen3:4b` directly in JXA.
+- Starts Ollama automatically when the Quick Action is invoked.
+- Reuses an existing model; only pulls it if it is genuinely missing.
+- Uses PDFKit to find the selected word in nearby page text.
+- Sends the selected word plus the surrounding sentence to Qwen.
+- Requests a maximum two-line answer with thinking disabled.
+- Defensively strips thinking markers and prompt leakage.
+
+## Known limitation
+
+Preview does not expose a stable current-page API through its normal scripting interface, so the helper prefers the visible page when it can infer it from the window title and otherwise searches nearby/whole-document pages. Repeated occurrences of the same word can therefore still select the wrong occurrence. This is the next area to improve.
