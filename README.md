@@ -1,8 +1,8 @@
-# Context Lens 0.3
+# Context Lens 0.1
 
 Local macOS reading assistant using Ollama + Qwen3.
 
-## 0.3 changes
+## 0.1 changes
 - Disables Qwen3 thinking for fast contextual lookups.
 - Starts the Ollama macOS app automatically when needed.
 - Keeps the Ollama service available for subsequent lookups.
